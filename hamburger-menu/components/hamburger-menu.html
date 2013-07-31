@@ -1,0 +1,156 @@
+<!-- Hamburger Menu -->
+<polymer-element name="hamburger-menu">
+
+	<!-- Shadow Dom -->
+	<template>
+	
+		<!-- Styles -->
+		<style>
+		#dresser {
+			height: 100%;
+			/* overflow: hidden; */
+			position: relative;
+			width: 100%;
+		}
+
+		.drawer {
+			background: rgba(0,0,0,0.1);
+			height: 100%;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+		}
+
+		.drawer.left {
+			right: 100%;
+		}
+
+		.drawer.right {
+			left: 100%;
+		}
+
+		</style>
+		
+		<div id="my"><div class="testy">hey</div></div>
+		
+		
+		<!-- Html -->
+		<div id="dresser" touch-action="pan-x pan-y">
+
+			<template id="drawertemplate" repeat="{{ drawer }}">
+
+		    	<div class="drawer {{position}}">{{ content }}</div>
+
+		    </template>
+
+	    </div>
+
+	</template>
+
+	<!-- Scripts -->
+	 <script>
+	 Polymer('hamburger-menu', {
+	 	// var model (Global) make accesible from outside so you can extend with your own drawers instead
+	 	// of editing actual menu.
+	 	ready: function() {
+
+	 		// Bind Model
+	 		var t = this.$.drawertemplate;
+	 		var model = {
+	 			drawer: [
+	 				{content: 'hi', position: 'left'},
+	 				{content: 'hi2', position: 'right'}
+	 			]
+	 		}
+	 		t.model = model;
+
+	 		console.log(this.$.dresser.children);
+
+			// Dresser Width
+	 		var dresserWidth = this.$.dresser.offsetWidth;
+	 		//console.log(this.$.dresser.children[0]);
+	 		console.log(this.$.my.children[0]);
+
+	 		// Bind Pointer to Dresser
+	 		this.$.dresser.addEventListener("pointerdown", 
+	 			function(ev) {
+
+					var startPoint = ev.offsetX;
+
+	 				if ( ev.offsetX < (dresserWidth / 2) ) {
+
+	 					this.addEventListener("pointermove", 
+	 						function(ev) {
+	 							trackPointer(ev, 'left', startPoint);
+	 						},
+	 					true);
+
+	 				}
+	 				else {
+
+	 					this.addEventListener("pointermove", 
+	 						function(ev) {
+	 							trackPointer(ev, 'right', startPoint);
+	 						},
+	 					true);
+
+	 				}
+
+	 			}, 
+	 		true);	 		
+
+	 		// Track Pointer Movement
+	 		function trackPointer(ev, direction, startPoint) {
+
+	 			if(direction == 'left') {
+	 				var distance = startPoint + ev.offsetX;
+	 				if (ev.offsetX > 0 && ev.offsetX < dresserWidth)
+	 					moveDrawer(distance);
+	 			}
+
+	 			if(direction == 'right') {
+	 				var distance = startPoint - ev.offsetX;
+	 				console.log(ev.offsetX)
+	 				if (ev.offsetX > 0 && ev.offsetX < dresserWidth)
+	 					moveDrawer(distance);
+	 			}
+
+	 		}
+
+	 		// Move Drawer
+	 		function moveDrawer(distance, drawer) {
+	 			//console.log(distance);
+	 			//console.log(drawer.posX);
+	 			//drawer.style.left = drawer.posX + distance;
+	 		}
+
+			// Remove Pointer Tracking on Pointer Up
+	 		this.$.dresser.addEventListener("pointerup",
+	 			function(ev) {
+	 				// if distance >= 0.5 * movingDrawerWidth
+	 					// showDrawer()
+	 				//else
+	 					// hideDrawer()
+
+	 				/*this.removeEventListener("pointermove", function() {}, true);*/
+
+	 				console.log('pointer up');
+	 			},
+	 		true);
+
+	 		// Show Drawer
+	 		function showDrawer(drawer) {
+
+	 		}
+
+	 		// Hide Drawer
+	 		function hideDrawer(drawer) {
+
+	 		}
+
+	 	}
+	 });
+	</script>
+
+</polymer-element>
