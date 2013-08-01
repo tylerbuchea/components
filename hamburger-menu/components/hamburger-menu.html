@@ -36,7 +36,7 @@
 		
 		
 		<!-- Html -->
-		<div id="dresser" touch-action="pan-x pan-y">
+		<div id="dresser" touch-action="none">
 
 			<template id="drawertemplate" repeat="{{ drawer }}">
 
@@ -65,11 +65,13 @@
 	 		}
 	 		t.model = model;
 
-	 		console.log(this.$.dresser.children);
-
-			// Dresser Width
+			// Globals
 	 		var dresserWidth = this.$.dresser.offsetWidth;
-	 		//console.log(this.$.dresser.children[0]);
+	 		var _trackPointer;
+	 		var selected;
+
+	 		// Test Cases
+	 		console.log(this.$.dresser.children);
 	 		console.log(this.$.my.children[0]);
 
 	 		// Bind Pointer to Dresser
@@ -80,42 +82,40 @@
 
 	 				if ( ev.offsetX < (dresserWidth / 2) ) {
 
-	 					this.addEventListener("pointermove", 
-	 						function(ev) {
-	 							trackPointer(ev, 'left', startPoint);
-	 						},
-	 					true);
+	 					_trackPointer = function(ev) {
+ 							trackPointer(ev, 'left', startPoint);
+ 						};
 
 	 				}
 	 				else {
 
-	 					this.addEventListener("pointermove", 
-	 						function(ev) {
-	 							trackPointer(ev, 'right', startPoint);
-	 						},
-	 					true);
+						_trackPointer = function(ev) {
+ 							trackPointer(ev, 'right', startPoint);
+ 						};
 
 	 				}
 
+ 					this.addEventListener("pointermove", _trackPointer, true);
+
 	 			}, 
-	 		true);	 		
+	 		true);
 
 	 		// Track Pointer Movement
 	 		function trackPointer(ev, direction, startPoint) {
 
 	 			if(direction == 'left') {
 	 				var distance = startPoint + ev.offsetX;
-	 				if (ev.offsetX > 0 && ev.offsetX < dresserWidth)
-	 					moveDrawer(distance);
+	 				console.log(ev.offsetX);
 	 			}
 
 	 			if(direction == 'right') {
 	 				var distance = startPoint - ev.offsetX;
-	 				console.log(ev.offsetX)
-	 				if (ev.offsetX > 0 && ev.offsetX < dresserWidth)
-	 					moveDrawer(distance);
+	 				console.log(ev.offsetX);	 				
 	 			}
 
+				if (ev.offsetX > 0 && ev.offsetX < dresserWidth)
+	 				moveDrawer(distance);
+	 			
 	 		}
 
 	 		// Move Drawer
@@ -125,28 +125,34 @@
 	 			//drawer.style.left = drawer.posX + distance;
 	 		}
 
-			// Remove Pointer Tracking on Pointer Up
-	 		this.$.dresser.addEventListener("pointerup",
-	 			function(ev) {
-	 				// if distance >= 0.5 * movingDrawerWidth
-	 					// showDrawer()
-	 				//else
-	 					// hideDrawer()
+			// End Tracking Events
+	 		this.$.dresser.addEventListener("pointerup", endTracking, true);
+	 		this.$.dresser.addEventListener("pointerleave", endTracking, true);
+	 		this.$.dresser.addEventListener("pointercancel", endTracking, true);
 
-	 				/*this.removeEventListener("pointermove", function() {}, true);*/
+	 		// End Pointer Move Tracking
+	 		function endTracking(ev) {
+ 				// Remove Pointer Move Event
+ 				this.removeEventListener("pointermove", _trackPointer, true);
 
-	 				console.log('pointer up');
-	 			},
-	 		true);
+ 				// if distance >= 0.5 * movingDrawerWidth
+ 					// showDrawer()
+ 				//else
+ 					// hideDrawer()
+
+ 				/*this.removeEventListener("pointermove", function() {}, true);*/
+	 		}
 
 	 		// Show Drawer
 	 		function showDrawer(drawer) {
-
+	 			// css transition .shown class
+	 			// removeClass('.selected');
+	 			// addClass('.selected')
 	 		}
 
 	 		// Hide Drawer
 	 		function hideDrawer(drawer) {
-
+	 			// css transition .hidden class
 	 		}
 
 	 	}
